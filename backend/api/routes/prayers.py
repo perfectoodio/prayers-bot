@@ -11,7 +11,7 @@ from twitter.tweet import create_tweet
 
 router = APIRouter()
 
-RATE_LIMIT = 5
+RATE_LIMIT = 1
 TIME_WINDOW = 600
 BAN_DURATION = 7 * 24 * 60 * 60
 REDIS_URL = os.getenv("REDIS_URL")
@@ -36,7 +36,7 @@ async def post_prayer(
         raise HTTPException(status_code=400, detail=validation)
 
     try:
-        create_tweet(message.user_message)
+        await create_tweet(message.user_message)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 

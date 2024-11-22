@@ -1,26 +1,26 @@
+import asyncio
 import os
 
 from dotenv import load_dotenv
-from tweety import Twitter
+from tweepy.asynchronous import AsyncClient
 
 load_dotenv()
 
 
-app = Twitter("session")
+app = AsyncClient(
+    consumer_key=os.getenv("TWITTER_API_KEY"),
+    consumer_secret=os.getenv("TWITTER_API_SECRET"),
+    access_token=os.getenv("TWITTER_ACCESS_TOKEN"),
+    access_token_secret=os.getenv("TWITTER_ACCESS_TOKEN_SECRET"),
+)
 
 
-def login():
-    if os.path.exists("session.tw_session"):
-        app.connect()
-    else:
-        app.sign_in(
-            username=os.getenv("TWITTER_USERNAME"),
-            password=os.getenv("TWITTER_PASSWORD"),
-        )
-    return "Login successful"
+async def create_tweet(message):
+    await app.create_tweet(
+        text=message
+    )
 
-
-def create_tweet(message):
-    login()
-    app.create_tweet(message)
     return {"user_message": message}
+
+if __name__ == "__main__":
+    print(asyncio.run(create_tweet("Teste")))

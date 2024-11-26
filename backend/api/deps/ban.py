@@ -16,15 +16,17 @@ def check_ban(redis: aioredis.Redis, ban_duration: int) -> Callable:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail={
-                    "error": "You are banned",
+                    "type": "error",
+                    "reason": "You are banned",
                     "ban_duration_seconds": ban_duration,
-                    "time_remaining_seconds": ban_expirity
-                }
+                    "time_remaining_seconds": ban_expirity,
+                },
             )
 
         return ip
 
     return dependency
+
 
 async def ban(ip: str, redis: aioredis.Redis, ban_duration: int) -> None:
     ban_key = f"ban:{ip}"

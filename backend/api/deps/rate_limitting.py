@@ -20,7 +20,8 @@ def check_user_rate_limit(
                 raise HTTPException(
                     status_code=status.HTTP_429_TOO_MANY_REQUESTS,
                     detail={
-                        "error": "User rate limit exceeded",
+                        "type": "error",
+                        "reason": "User rate limit exceeded",
                         "limit": rate_limit,
                         "time_window_seconds": time_window,
                         "retry_after_seconds": await redis.ttl(rate_key),
@@ -53,7 +54,8 @@ def check_system_rate_limit(
                     status_code=status.HTTP_429_TOO_MANY_REQUESTS,
                     content={
                         "detail": {
-                            "error": "System rate limit exceeded",
+                            "type": "error",
+                            "reason": "System rate limit exceeded",
                             "limit": global_limit,
                             "time_window_seconds": time_window,
                             "retry_after_seconds": await redis.ttl(rate_key),

@@ -2,6 +2,7 @@ import os
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
 from redis import asyncio as aioredis
 
 from api.deps.rate_limitting import check_system_rate_limit
@@ -15,6 +16,13 @@ GLOBAL_RATE_LIMIT = 50
 GLOBAL_TIME_WINDOW = 900
 REDIS_URL = os.getenv("REDIS_URL")
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.middleware("http")
 async def global_rate_limit_middleware(request: Request, call_next):

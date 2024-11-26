@@ -23,7 +23,9 @@ redis = aioredis.from_url(REDIS_URL, encoding="utf-8", decode_responses=True)
 async def post_prayer(
     message: UserMessage,
     ip: str = Depends(
-        check_user_rate_limit(rate_limit=RATE_LIMIT, time_window=TIME_WINDOW, redis=redis)
+        check_user_rate_limit(
+            rate_limit=RATE_LIMIT, time_window=TIME_WINDOW, redis=redis
+        )
     ),
     banned_ip: str = Depends(check_ban(redis=redis, ban_duration=BAN_DURATION)),
 ):
@@ -33,11 +35,13 @@ async def post_prayer(
         if validation["isSensitive"]:
             await ban(banned_ip, redis, BAN_DURATION)
 
-        raise HTTPException(status_code=400, detail=validation)
+        raise HTTPException(
+            status_code=400, detail={"type": "error", "reason": validation["reason"]}
+        )
 
     try:
         await create_tweet(message.user_message)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-    return {"detail": f"Prayer tweeted sucessfully: {message.user_message}"}
+    return {"detail": {"type": "success", "user_message": message.user_message}}
